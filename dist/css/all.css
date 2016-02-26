@@ -1,0 +1,131 @@
+body{
+	color:#222;
+};.pager ul{
+	list-style-type: none;
+}
+.pager ul>li{
+	display:inline-block;
+}
+/*.actived {
+    color: red;
+  	background:yellow
+}*/
+.pager a{
+	padding:5px;
+  	margin:0 2px;
+  	border:solid #eee 1px;
+  	cursor:pointer;
+  	-webkit-user-select:none;
+  	-moz-user-select:none;
+  	-o-user-select:none;
+  	user-select:none;
+}
+
+.people-list.ng-enter,
+.people-list.ng-leave,
+.people-list.ng-move {
+  -webkit-transition: 0.5s linear all;
+  -moz-transition: 0.5s linear all;
+  -o-transition: 0.5s linear all;
+  transition: 0.5s linear all;
+}
+
+.people-list.ng-enter,
+.people-list.ng-move {
+  opacity: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.people-list.ng-move.ng-move-active,
+.people-list.ng-enter.ng-enter-active {
+  opacity: 1;
+  height: 18px;
+}
+
+.people-list.ng-leave {
+  opacity: 1;
+  overflow: hidden;
+}
+
+.people-list.ng-leave.ng-leave-active {
+  opacity: 0;
+  height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* cross fading between routes with ngView */
+
+.view-container {
+  position: relative;
+}
+
+.view-frame.ng-enter,
+.view-frame.ng-leave {
+  background: white;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.view-frame.ng-enter {
+  -webkit-animation: 0.5s fade-in;
+  -moz-animation: 0.5s fade-in;
+  -o-animation: 0.5s fade-in;
+  animation: 0.5s fade-in;
+  z-index: 100;
+}
+
+.view-frame.ng-leave {
+  -webkit-animation: 0.5s fade-out;
+  -moz-animation: 0.5s fade-out;
+  -o-animation: 0.5s fade-out;
+  animation: 0.5s fade-out;
+  z-index: 99;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@-moz-keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@-webkit-keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@-moz-keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@-webkit-keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes zoom-in{
+  from{font-size: 16px;color: #222}
+  to{font-size: 40px;color:red;}
+}
+
+@keyframes zoom-out{
+  from{font-size: 40px;color:red;}
+  to{font-size: 16px;color: #222}  
+}
+
+.pager{
+	-webkit-
+}
+
+.actived{
+  animation: zoom-in 0.3s forwards;
+}

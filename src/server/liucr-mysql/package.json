@@ -1,0 +1,11 @@
+{
+  "name": "liucr-mysql",
+  "version": "1.0.0",
+  "description": "personal mysql package",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Chris Liu",
+  "license": "ISC"
+}

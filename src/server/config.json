@@ -1,0 +1,7 @@
+{
+	"host":"10.1.2.147",
+	"user":"hcuser1",
+	"password":"hcuser2016",
+	"database":"tjshealthclub",
+	"multipleStatements":"true"
+}

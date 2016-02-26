@@ -1,0 +1,2 @@
+/*! testnode 2016-02-26 */
+var m=require("./liucr-mysql"),cfg={host:"10.1.2.147",user:"hcuser1",password:"hcuser2016",database:"tjshealthclub"},cb=function(a){},a=new m.mysqlop(cfg);a.GetMaxID("agentname","t_agents",cb);

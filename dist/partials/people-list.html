@@ -1,0 +1,40 @@
+<div>
+		<input ng-model="query"><span>{{(peoples | filter:query).length}}</span>
+		<span>排序</span>
+		<select ng-model="orderfield">
+			<option value="id">id</option>
+			<option value="age">Age</option>
+			<option value="name">Name</option>
+		</select>
+		<span>页面大小</span>
+		<select ng-model="pageSize" ng-change="ChangeSize()">
+			<option value="5">5</option>
+			<option value="10">10</option>
+			<option value="20">23</option>
+			<option value="30">30</option>
+			<option value="100">100</option>
+		</select>
+		<span>页码</span>
+		<select ng-model="pageIndex">
+			<option ng-repeat="i in BA((peoples | filter:query).length/pageSize+1)" value="{{i-1}}">{{i}}</option>
+		</select>
+		<div class="pager">
+			<ul>
+				<li>
+					<a ng-click="PrevPage()">Prev</a>
+				</li>
+				<li ng-repeat="i in BA((peoples | filter:query).length/pageSize+1)">
+					<a ng-click="GoPage(i)" class="pn" ng-class="{actived:i-1==pageIndex}">{{i}}</a>
+				</li>
+				<li>
+					<a ng-click="NextPage()">Next</a>
+				</li>
+			</ul>
+		</div>
+		<ol>
+			<li ng-repeat="i in (peoples | filter:query | orderBy:orderfield).splice(pageSize*pageIndex,pageSize)">
+				<span>{{i.id}}-Name:{{i.name | FirstCharUpper}},Age:{{i.age}}</span>
+			</li>
+		</ol>
+		
+	</div>

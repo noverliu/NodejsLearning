@@ -1,0 +1,2 @@
+/*! testnode 2016-02-26 */
+exports.Load=function(){String.format=function(){if(0==arguments.length)return null;for(var a=arguments[0],b=1;b<arguments.length;b++){var c=new RegExp("\\{"+(b-1)+"\\}","gm");a=a.replace(c,arguments[b])}return a}};
