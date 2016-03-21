@@ -22,7 +22,25 @@ app.get('/GetAgent',function(req,res){
 		res.send({data:r,total:100});
 	});	
 })
-
+app.get('/GetTorrents',function(req,res){
+	var t=req.body.type;
+	switch(t){
+		case "Pager":
+			var from=req.body.from,
+				qty=req.body.qty;
+			if(!from||!qty){
+				console.log("参数不全");
+				return;
+			}
+			mysql.GetAgentByPage(from,qty,function(data){
+				res.send({data:data[1],total:data[0][0].total})
+			});
+			break;
+		default:
+			console.log("参数错误");
+			return;
+	}
+});
 app.post('/GetAgent',function(req,res){
 	var t=req.body.type;
 	switch(t){

@@ -42,6 +42,16 @@ exports.sql=function(){
 			cb(result);
 		})
 	}
+	this.GetTorrentsByPage=function(from,count,cb){
+		Connect(true);
+		var s='select count(1) total from t_spider;select * from t_spider order by id limit ?,?;';
+		con.query(s,[from-1,Number.parseInt(count)],function(err,result,fields){
+			if(err){
+				throw err;
+			}
+			cb(result);
+		})
+	}
 	this.GetAgentList=function(cb){
 		Connect();
 		var s='select * from t_agents order by agentid;';

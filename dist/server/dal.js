@@ -1,2 +1,2 @@
-/*! testnode 2016-02-26 */
+/*! testnode 2016-03-07 */
 var mysql=require("./liucr-mysql"),cfg=require("./config.json"),strext=require("./liucr-strext"),db=new mysql.mysqlop(cfg);strext.Load(),exports.ysg=function(){this.GetAgent=function(a,b){db.ExecuteSql("select * from t_agents where agentid = :agentid",{agentid:a},b)},this.GetAgentByPage=function(a,b,c){db.QueryMulti(String.format("select count(1) total from t_agents;select * from t_agents order by agentid limit {0},{1}",a,b),[],1e4,c)},this.GetAgentList=function(a){db.ExecuteSql("select * from t_agents order by agentid;",[],a)}};

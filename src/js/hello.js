@@ -1,112 +1,231 @@
-
 /**
-* peopleServices Module
-*
-* 数据服务模块
-*/
+ * peopleServices Module
+ *
+ * 数据服务模块
+ */
 angular.module('peopleServices', ['ngResource']).
-	factory('people',['$resource',function($resource){
-		return $resource('GetAgent', {}, {
-			list:{method:'GET',isArray:false},
-			query:{method:'POST',isArray:false}
-		});
-	}]);	
-
+factory('people', ['$resource', function($resource) {
+	return $resource('GetAgent', {}, {
+		list: {
+			method: 'GET',
+			isArray: false
+		},
+		query: {
+			method: 'POST',
+			isArray: false
+		}
+	});
+}]);
 /**
-* testApp Module
+*  Module
 *
-* 主模块
+* 种子服务模块
 */
-var app=angular.module('testApp', ['ngRoute','ngAnimate','peopleServices'])
-app.config(['$routeProvider',function($routeProvider) {
+angular.module('BTServices', ['ngResource']).
+factory('torrent',['$resource',function($resource){
+	return $resource('GetTorrents',{},{
+		query:{
+			method:'GET',
+			isArray:false
+		}
+	})
+}]);
+/**
+ * testApp Module
+ *
+ * 主模块
+ */
+var app = angular.module('testApp', ['ngRoute', 'ngAnimate', 'peopleServices','BTServices'])
+app.config(['$routeProvider', function($routeProvider) {
 	$routeProvider.
-		when('/peoples',{templateUrl:'partials/people-list.html',controller:'HelloAngular'}).
-		when('/peoples/:peopleId',{templateUrl:'partials/people-detail.html',controller:'peopleDetailCtrl'}).
-		otherwise({redirectTo:'/peoples'});
+	when('/peoples', {
+		templateUrl: 'partials/people-list.html',
+		controller: 'HelloAngular'
+	}).
+	when('/peoples/:peopleId', {
+		templateUrl: 'partials/people-detail.html',
+		controller: 'peopleDetailCtrl'
+	}).
+	when('/p2pspider',{
+		templateUrl:'partials/torrent.html',
+		controller:'BTList'
+	}).
+	otherwise({
+		redirectTo: '/peoples'
+	});
 }])
 
-app.factory('jcache', ['$cacheFactory', function($cacheFactory){
+app.factory('jcache', ['$cacheFactory', function($cacheFactory) {
 	return $cacheFactory('jcache');
 }])
 
 // 首字母大写过滤器
-app.filter('FirstCharUpper',function(){
-	return function(input){
-		var a=input.trim().split(" ");
-		var b=[];
-		for(var i in a){
-			b.push(a[i][0].toUpperCase()+a[i].substr(1).toLowerCase());
+app.filter('FirstCharUpper', function() {
+	return function(input) {
+		if(input !=undefined){
+		var a = input.trim().split(" ");
+		var b = [];
+		for (var i in a) {
+			b.push(a[i][0].toUpperCase() + a[i].substr(1).toLowerCase());
 		}
-		return b.join(" ");
+		return b.join(" ");}
 	}
 })
 
-/// 列表页控制器
-app.controller('HelloAngular', ['$scope','$http','$filter','people','jcache','$route', function($scope,$http,$filter,people,cache,$route){
+app.filter('transbool', function() {
+	return function(input) {
+		if(input !=undefined){
+		//var value="";
+		if(input==true)return "Y";
+		if(input==false)return "N";}
+	}
+})
+app.controller("BTList",['$scope','$http','jcache','$route','torrent',function($scope,$http,jcache,$route,torrent){
 
-	$scope.peoples=cache.get("people.list");
-	if(!$scope.peoples){
-		RefreshList();
+	$scope.torrents=cache.get("torrent.list");
+	if(!$scope.torrents){
+		//RefreshList;
 	}
 	function RefreshList(){
-		people.query({type:"Pager",from:1,qty:4},function(data){
-			$scope.peoples=data.data;
+		torrent.query({
+			type:"Pager",
+			from:1,
+			qty:100
+		},function(data){
+			$scope.torrents=data.data;
 			$scope.Total=data.total;
-			cache.put("people.list",$scope.peoples);
-		});		
+			cache.put("people.list",$scope.torrents)
+		});
 	}
 	$scope.Refresh=function(){
 		RefreshList();
 	};
-	$scope.orderfield="id";
-	$scope.pageSize=3;
-	$scope.pageIndex="0";
+	$scope.pageSize = 20;
+	$scope.pageIndex = 0;
 	jQuery(".pn.actived").css({
-		'color':'red',
-		'font-size':'40px'	
-	})
-	//$scope.pages=Math.ceil($filter("filter")($scope.peoples,$scope.query).length/$scope.pageSize);
-	// $scope.peoples=a;
-	$scope.BA=BuildArray;
-	$scope.PrevPage=function(){
-		var i=Number.parseInt($scope.pageIndex)-1;
-		$scope.pageIndex=(i<0?0:i).toString();
+		'color': 'red',
+		'font-size': '40px'
+	});
+	$scope.PrevPage = function() {
+		var i = Number.parseInt($scope.pageIndex) - 1;
+		$scope.pageIndex = (i < 0 ? 0 : i).toString();
 	};
-	$scope.NextPage=function(){		
-		var i=Number.parseInt($scope.pageIndex)+1;
-		var max=Math.ceil($filter("filter")($scope.peoples,$scope.query).length/$scope.pageSize)-1;
-		$scope.pageIndex=(i>max?max:i).toString();
-		if(i>=max){
+	$scope.NextPage = function() {
+		var i = Number.parseInt($scope.pageIndex) + 1;
+		var max = Math.ceil($scope.torrents.length / $scope.pageSize) - 1;
+		$scope.pageIndex = (i > max ? max : i).toString();
+		if (i >= max) {
 			$scope.More();
 		}
 
 	};
-	$scope.GoPage=function(i){
-		$scope.pageIndex=(i-1).toString();
-	}
-	$scope.ChangeSize=function(){
-		var pages=Math.ceil($filter("filter")($scope.peoples,$scope.query).length/$scope.pageSize);
-		if($scope.pageIndex+1>pages){
-			$scope.pageIndex=pages-1;
-		}
-	}
-	$scope.More=function(){
-		if(!($scope.query)){
-			if($scope.peoples.length<$scope.Total){
-				var f=$scope.peoples.length+1,
-					t=4;
-				people.query({type:"Pager",from:f,qty:t},function(data){
-					$scope.peoples=$scope.peoples.concat(data.data);
-					cache.put("people.list",$scope.peoples);
+	$scope.BA = BuildArray;
+	$scope.GoPage = function(i) {
+		$scope.pageIndex = (i - 1).toString();
+	};
+	$scope.More = function() {
+		if (!($scope.query)) {
+			if ($scope.torrents.length < $scope.Total) {
+				var f = $scope.torrents.length + 1,
+					t = 4;
+				people.query({
+					type: "Pager",
+					from: f,
+					qty: t
+				}, function(data) {
+					$scope.torrents = $scope.torrents.concat(data.data);
+					cache.put("people.list", $scope.torrents);
 				})
 			}
-		}else{
+		} else {
 			alert("请先清空筛选条件");
 		}
 	};
-	function BuildArray(n){
-		var a=[];
-		for(var i=1;i<n;i++){
+	function BuildArray(n) {
+		var a = [];
+		for (var i = 1; i < n; i++) {
+			a.push(i);
+		}
+		return a;
+	}
+}])
+
+/// 列表页控制器
+app.controller('HelloAngular', ['$scope', '$http', '$filter', 'people', 'jcache', '$route', function($scope, $http, $filter, people, cache, $route) {
+
+	$scope.peoples = cache.get("people.list");
+	if (!$scope.peoples) {
+		RefreshList();
+	}
+	$scope.boolvar=[false,true];
+	function RefreshList() {
+		people.query({
+			type: "Pager",
+			from: 1,
+			qty: 4
+		}, function(data) {
+			$scope.peoples = data.data;
+			$scope.Total = data.total;
+			cache.put("people.list", $scope.peoples);
+		});
+	}
+	$scope.Refresh = function() {
+		RefreshList();
+	};
+	$scope.orderfield = "id";
+	$scope.pageSize = 3;
+	$scope.pageIndex = "0";
+	jQuery(".pn.actived").css({
+			'color': 'red',
+			'font-size': '40px'
+		})
+		//$scope.pages=Math.ceil($filter("filter")($scope.peoples,$scope.query).length/$scope.pageSize);
+		// $scope.peoples=a;
+	$scope.BA = BuildArray;
+	$scope.PrevPage = function() {
+		var i = Number.parseInt($scope.pageIndex) - 1;
+		$scope.pageIndex = (i < 0 ? 0 : i).toString();
+	};
+	$scope.NextPage = function() {
+		var i = Number.parseInt($scope.pageIndex) + 1;
+		var max = Math.ceil($filter("filter")($scope.peoples, $scope.query).length / $scope.pageSize) - 1;
+		$scope.pageIndex = (i > max ? max : i).toString();
+		if (i >= max) {
+			$scope.More();
+		}
+
+	};
+	$scope.GoPage = function(i) {
+		$scope.pageIndex = (i - 1).toString();
+	}
+	$scope.ChangeSize = function() {
+		var pages = Math.ceil($filter("filter")($scope.peoples, $scope.query).length / $scope.pageSize);
+		if ($scope.pageIndex + 1 > pages) {
+			$scope.pageIndex = pages - 1;
+		}
+	}
+	$scope.More = function() {
+		if (!($scope.query)) {
+			if ($scope.peoples.length < $scope.Total) {
+				var f = $scope.peoples.length + 1,
+					t = 4;
+				people.query({
+					type: "Pager",
+					from: f,
+					qty: t
+				}, function(data) {
+					$scope.peoples = $scope.peoples.concat(data.data);
+					cache.put("people.list", $scope.peoples);
+				})
+			}
+		} else {
+			alert("请先清空筛选条件");
+		}
+	};
+
+	function BuildArray(n) {
+		var a = [];
+		for (var i = 1; i < n; i++) {
 			a.push(i);
 		}
 		return a;
@@ -114,41 +233,44 @@ app.controller('HelloAngular', ['$scope','$http','$filter','people','jcache','$r
 }])
 
 ///详细页控制器
-app.controller('peopleDetailCtrl', ['$scope','$routeParams','people','jcache', function($scope,$routeParams,people,cache){
+app.controller('peopleDetailCtrl', ['$scope', '$routeParams', 'people', 'jcache', function($scope, $routeParams, people, cache) {
 	//var d=new people();
-	
+
 	//$scope.p=people.query({agentid:$routeParams.peopleId});
-	$scope.p=cache.get('people.Id'+$routeParams.peopleId);
-	if(!$scope.p){
-		people.query({type:"Detail",agentid:$routeParams.peopleId},function(data){
+	$scope.p = cache.get('people.Id' + $routeParams.peopleId);
+	if (!$scope.p) {
+		people.query({
+			type: "Detail",
+			agentid: $routeParams.peopleId
+		}, function(data) {
 			console.log(data.length);
-			$scope.p=data.data[0];
-			cache.put('people.Id'+$routeParams.peopleId,$scope.p);
-		});		
+			$scope.p = data.data[0];
+			cache.put('people.Id' + $routeParams.peopleId, $scope.p);
+		});
 	}
 }])
 
 ///动画
-app.animation(".pn",function(){
+app.animation(".pn", function() {
 	return {
-		addClass:function(element,className,done){
-			if(className!="actived"){
+		addClass: function(element, className, done) {
+			if (className != "actived") {
 				return;
 			}
 			// element.css({
-			
+
 			// });
 			jQuery(element).css({
 				'animation': 'zoom-in 0.3s forwards'
 			});
-			return function(cancel){
-				if(cancel){
+			return function(cancel) {
+				if (cancel) {
 					element.stop();
 				}
 			};
 		},
-		removeClass:function(element,className,done){
-			if(className!="actived"){
+		removeClass: function(element, className, done) {
+			if (className != "actived") {
 				return;
 			}
 			// element.css({
@@ -157,8 +279,8 @@ app.animation(".pn",function(){
 			jQuery(element).css({
 				'animation': 'zoom-out 0.3s forwards'
 			});
-			return function(cancel){
-				if(cancel){
+			return function(cancel) {
+				if (cancel) {
 					element.stop();
 				}
 			};
@@ -167,38 +289,38 @@ app.animation(".pn",function(){
 });
 
 ///全局事件注册
-app.run(['$rootScope','$log','$location','$window',function($rootScope,$log,$location,$window){
-	var locationChangeStartOff = $rootScope.$on('$locationChangeStart', locationChangeStart);  
-    var locationChangeSuccessOff = $rootScope.$on('$locationChangeSuccess', locationChangeSuccess);  
-  
-    var routeChangeStartOff = $rootScope.$on('$routeChangeStart', routeChangeStart);  
-    var routeChangeSuccessOff = $rootScope.$on('$routeChangeSuccess', routeChangeSuccess);  
-  
-    function locationChangeStart(event) {  
-        $log.log('locationChangeStart');  
-        $log.log(arguments);  
-        
-        if($location.path()!=""&&$location.path()!="/peoples"){
-        	
-        }
+app.run(['$rootScope', '$log', '$location', '$window', function($rootScope, $log, $location, $window) {
+	var locationChangeStartOff = $rootScope.$on('$locationChangeStart', locationChangeStart);
+	var locationChangeSuccessOff = $rootScope.$on('$locationChangeSuccess', locationChangeSuccess);
 
-    }  
-  
-    function locationChangeSuccess(event) {  
-        $log.log('locationChangeSuccess');  
-        $log.log(arguments);  
-        console.log($location.path());
-    }  
-  
-    function routeChangeStart(event) {  
-        $log.log('routeChangeStart');  
-        $log.log(arguments);  
-        console.log($location.path());
-    }  
-  
-    function routeChangeSuccess(event) {  
-        $log.log('routeChangeSuccess');  
-        $log.log(arguments);  
-        console.log($location.path());
-    }  
+	var routeChangeStartOff = $rootScope.$on('$routeChangeStart', routeChangeStart);
+	var routeChangeSuccessOff = $rootScope.$on('$routeChangeSuccess', routeChangeSuccess);
+
+	function locationChangeStart(event) {
+		$log.log('locationChangeStart');
+		$log.log(arguments);
+
+		if ($location.path() != "" && $location.path() != "/peoples") {
+
+		}
+
+	}
+
+	function locationChangeSuccess(event) {
+		$log.log('locationChangeSuccess');
+		$log.log(arguments);
+		console.log($location.path());
+	}
+
+	function routeChangeStart(event) {
+		$log.log('routeChangeStart');
+		$log.log(arguments);
+		console.log($location.path());
+	}
+
+	function routeChangeSuccess(event) {
+		$log.log('routeChangeSuccess');
+		$log.log(arguments);
+		console.log($location.path());
+	}
 }])

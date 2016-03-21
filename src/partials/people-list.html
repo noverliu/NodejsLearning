@@ -1,4 +1,9 @@
 <div>
+<select name="" id="" ng-model="boolvalue">
+	<option ng-repeat="v in boolvar">{{v | transbool}}</option>
+	
+</select>
+
 		<input id="input" ng-model="query"><span>{{(peoples | filter:query).length}}</span>
 		<span>排序</span>
 		<select ng-model="orderfield">
@@ -6,6 +11,7 @@
 			<option value="phonenumber">Mobile</option>
 			<option value="agentname">Name</option>
 		</select>
+		<span ng-bind="boolvar | transbool"></span>
 		<span>页面大小</span>
 		<select ng-model="pageSize" ng-change="ChangeSize()">
 			<option value="5">5</option>

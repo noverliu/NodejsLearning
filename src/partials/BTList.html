@@ -1,0 +1,42 @@
+<div>
+<select name="" id="" ng-model="boolvalue">
+	<option ng-repeat="v in boolvar">{{v | transbool}}</option>
+	
+</select>
+		<span>页面大小</span>
+		<select ng-model="pageSize" ng-change="ChangeSize()">
+			<option value="10">10</option>
+			<option value="20">20</option>
+			<option value="30">30</option>
+			<option value="50">50</option>
+			<option value="100">100</option>
+		</select>
+		<span>页码</span>
+		<select ng-model="pageIndex">
+			<option ng-repeat="i in BA(torrents.length/pageSize+1)" value="{{i-1}}">{{i}}</option>
+		</select>
+		<button ng-click="Refresh()">刷新</button>
+		<button ng-click="More()">加载更多</button>
+		<div class="pager">
+			<ul>
+				<li>
+					<a ng-click="PrevPage()">Prev</a>
+				</li>
+				<li ng-repeat="i in BA(torrents.length/pageSize+1)">
+					<a ng-click="GoPage(i)" class="pn" ng-class="{actived:i-1==pageIndex}">{{i}}</a>
+				</li>
+				<li>
+					<a ng-click="NextPage()">Next</a>
+				</li>
+			</ul>
+		</div>
+		<ol>
+			<li ng-repeat="i in torrents.splice(pageSize*pageIndex,pageSize)" class="people-list">
+				<a href="i.magnet">{{i.name}}</a>
+			</li>
+		</ol>
+		<div ng-if="torrents.length<Total">
+			<button ng-click="More()">加载更多</button>
+		</div>
+		
+	</div>

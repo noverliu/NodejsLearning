@@ -1,2 +1,2 @@
-/*! testnode 2016-02-26 */
+/*! testnode 2016-03-07 */
 exports.sql=function(){function a(a){a&&(c.multipleStatements=!0),d=b.createConnection(c),d.connect()}var b=require("mysql"),c=require("./config.json"),d=null;this.GetAgent=function(b,c){a(!1);var e="select * from t_agents",f=[];b&&"all"!=b&&(e+=" where agentid=?",f=[b]),d.query(e,f,function(a,b,d){if(a)throw a;c(b)})},this.GetAgentByPage=function(b,c,e){a(!0);var f="select count(1) total from t_agents;select * from t_agents order by agentid limit ?,?;";d.query(f,[b-1,Number.parseInt(c)],function(a,b,c){if(a)throw a;e(b)})},this.GetAgentList=function(b){a();var c="select * from t_agents order by agentid;";d.query(c,function(a,c,d){if(a)throw a;b(c)})}};
